@@ -228,6 +228,8 @@ module API
             "#{days_non_working}/#{date}"
           end
 
+          resources :company
+
           index :help_text
           show :help_text
 
