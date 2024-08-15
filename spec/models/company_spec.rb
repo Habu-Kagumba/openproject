@@ -31,6 +31,10 @@ require "spec_helper"
 RSpec.describe Company do
   describe "associations" do
     it { is_expected.to belong_to(:owner).class_name("User") }
+    it { is_expected.to have_many(:shares_as_parent).class_name("Share").with_foreign_key("parent_id").dependent(:destroy) }
+    it { is_expected.to have_many(:child_companies).through(:shares_as_parent).source(:child) }
+    it { is_expected.to have_many(:shares_as_child).class_name("Share").with_foreign_key("child_id").dependent(:destroy) }
+    it { is_expected.to have_many(:parent_companies).through(:shares_as_child).source(:parent) }
   end
 
   describe "validations" do
