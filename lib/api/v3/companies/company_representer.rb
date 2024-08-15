@@ -35,9 +35,10 @@ module API
         property :id, writable: false
         property :name
 
-        associated_resource :owner,
-                            v3_path: :user,
-                            representer: ::API::V3::Users::UserRepresenter
+        associated_resources :owners,
+                             as: :owningUsers,
+                             v3_path: :user,
+                             representer: ::API::V3::Users::UserRepresenter
 
         def _type
           "Company"

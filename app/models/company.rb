@@ -30,15 +30,21 @@ class Company < ApplicationRecord
   belongs_to :owner, class_name: "User"
 
   # A company can have many child companies through the `shares` table
-  has_many :shares_as_parent, class_name: "Share", foreign_key: "parent_id", inverse_of: :child, dependent: :destroy
+  has_many :shares_as_parent, class_name: "Share", foreign_key: "parent_id", inverse_of: :parent, dependent: :destroy
   has_many :child_companies, through: :shares_as_parent, source: :child
 
   # A company can have many parent companies through the `shares` table
-  has_many :shares_as_child, class_name: "Share", foreign_key: "child_id", inverse_of: :parent, dependent: :destroy
+  has_many :shares_as_child, class_name: "Share", foreign_key: "child_id", inverse_of: :child, dependent: :destroy
   has_many :parent_companies, through: :shares_as_child, source: :parent
 
   validates :name,
             :owner,
             presence: true
   validates :name, length: { maximum: 256 }
+
+  def owners
+    return [owner] if shares_as_child.active.empty?
+
+    shares_as_child.active.includes(:parent).map(&:parent).flat_map(&:owners).uniq
+  end
 end
